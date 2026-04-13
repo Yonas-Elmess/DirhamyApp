@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  nom       String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  revenus    Revenu[]
+  depenses   Depense[]
+  categories Categorie[]
+  budgets    Budget[]
+  objectifs  Objectif[]
+
+  @@map("users")
+}
+
+model Revenu {
+  id          String   @id @default(cuid())
+  montant     Float
+  date        DateTime
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("revenus")
+}
+
+model Depense {
+  id          String   @id @default(cuid())
+  montant     Float
+  date        DateTime
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  userId      String    @map("user_id")
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categorieId String?   @map("categorie_id")
+  categorie   Categorie? @relation(fields: [categorieId], references: [id], onDelete: SetNull)
+
+  @@map("depenses")
+}
+
+model Categorie {
+  id       String  @id @default(cuid())
+  nom      String
+  icone    String? @default("📁")
+  couleur  String? @default("#3b82f6")
+  isGlobal Boolean @default(false) @map("is_global")
+
+  userId   String?   @map("user_id")
+  user     User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  depenses Depense[]
+
+  @@map("categories")
+}
+
+model Budget {
+  id      String @id @default(cuid())
+  montant Float
+  mois    Int
+  annee   Int
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, mois, annee])
+  @@map("budgets")
+}
+
+model Objectif {
+  id          String   @id @default(cuid())
+  nom         String
+  montantCible Float   @map("montant_cible")
+  dateDebut   DateTime @map("date_debut")
+  dateFin     DateTime @map("date_fin")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  userId      String       @map("user_id")
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cotisations Cotisation[]
+
+  @@map("objectifs")
+}
+
+model Cotisation {
+  id      String   @id @default(cuid())
+  montant Float
+  date    DateTime
+  createdAt DateTime @default(now()) @map("created_at")
+
+  objectifId String   @map("objectif_id")
+  objectif   Objectif @relation(fields: [objectifId], references: [id], onDelete: Cascade)
+
+  @@map("cotisations")
+}
