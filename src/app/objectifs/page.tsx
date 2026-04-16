@@ -6,6 +6,7 @@ import { formatMontant, formatDateShort, formatDateInput } from "@/lib/utils";
 import Modal from "@/components/ui/Modal";
 import ProgressBar from "@/components/ui/ProgressBar";
 import EmptyState from "@/components/ui/EmptyState";
+import AIAnalysisModal from "@/components/ui/AIAnalysisModal";
 import toast from "react-hot-toast";
 
 export default function ObjectifsPage() {
@@ -25,6 +26,10 @@ export default function ObjectifsPage() {
     montant: "",
     date: new Date().toISOString().split("T")[0],
   });
+  const [aiModalOpen, setAiModalOpen] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiAnalysis, setAiAnalysis] = useState<any>(null);
+  const [aiObjectifNom, setAiObjectifNom] = useState("");
 
   useEffect(() => {
     loadObjectifs();
@@ -108,6 +113,22 @@ export default function ObjectifsPage() {
       loadObjectifs();
     } catch (err: any) {
       toast.error(err.message);
+    }
+  };
+
+  const handleAnalyze = async (o: any) => {
+    setAiObjectifNom(o.nom);
+    setAiAnalysis(null);
+    setAiLoading(true);
+    setAiModalOpen(true);
+    try {
+      const data = await api.objectifs.analyze(o.id);
+      setAiAnalysis(data.analysis);
+    } catch (err: any) {
+      toast.error(err.message || "Erreur lors de l'analyse");
+      setAiModalOpen(false);
+    } finally {
+      setAiLoading(false);
     }
   };
 
@@ -314,8 +335,19 @@ export default function ObjectifsPage() {
                   </div>
                 )}
 
+                {/* AI Analyze button */}
+                <button
+                  onClick={() => handleAnalyze(o)}
+                  className="mt-5 w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-purple-500 via-violet-500 to-indigo-500 hover:from-purple-600 hover:via-violet-600 hover:to-indigo-600 text-white text-sm font-semibold shadow-md shadow-purple-500/20 transition-all"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
+                  </svg>
+                  Analyser avec IA
+                </button>
+
                 {/* Actions */}
-                <div className="flex gap-2 mt-5 pt-4 border-t border-gray-100 dark:border-gray-700/40">
+                <div className="flex gap-2 mt-3 pt-4 border-t border-gray-100 dark:border-gray-700/40">
                   <button
                     onClick={() => openCotisation(o)}
                     className="btn-success text-sm py-2.5 px-4 flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl"
@@ -424,6 +456,15 @@ export default function ObjectifsPage() {
           </div>
         </form>
       </Modal>
+
+      {/* AI Analysis Modal */}
+      <AIAnalysisModal
+        open={aiModalOpen}
+        onClose={() => setAiModalOpen(false)}
+        loading={aiLoading}
+        analysis={aiAnalysis}
+        objectifNom={aiObjectifNom}
+      />
 
       {/* Cotisation Modal */}
       <Modal

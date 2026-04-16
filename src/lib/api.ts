@@ -88,6 +88,10 @@ export const api = {
       }),
     delete: (id: string) =>
       request(`/objectifs/${id}`, { method: "DELETE" }),
+    analyze: (id: string) =>
+      request<{ analysis: any; input: any }>(`/objectifs/${id}/analyze`, {
+        method: "POST",
+      }),
   },
 
   // Cotisations
