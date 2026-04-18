@@ -2,7 +2,7 @@
 
 A full-stack personal budget management web application built for Moroccan users — track income, expenses, budgets, and savings goals, with an AI-powered financial analysis feature.
 
-> **[🔗 Live Demo](https://dirhamy-app.vercel.app)**
+**[🔗 Live Demo](https://dirhamy-app.vercel.app)** · **[🎨 Project Poster](https://yonas-elmess.github.io/DirhamyApp/poster.html)**
 
 ---
 
@@ -59,8 +59,16 @@ Fallback mock mode available for local development without an API key.
 src/
 ├── app/
 │   ├── (auth)/          # Login + Register
-│   ├── api/             # REST API routes (auth, revenus, depenses,
-│   │                    #   categories, budgets, objectifs, stats...)
+│   ├── api/             # REST API routes
+│   │   ├── auth/        # register, login, logout, me
+│   │   ├── revenus/     # Income CRUD
+│   │   ├── depenses/    # Expense CRUD
+│   │   ├── categories/  # Category CRUD
+│   │   ├── budgets/     # Budget CRUD
+│   │   ├── objectifs/   # Savings goals + AI analysis
+│   │   ├── cotisations/ # Goal contributions
+│   │   ├── stats/       # Dashboard aggregates
+│   │   └── transactions/# Transaction history
 │   ├── dashboard/
 │   ├── depenses/
 │   ├── revenus/
