@@ -2,7 +2,7 @@
 
 A full-stack personal budget management web application built for Moroccan users — track income, expenses, budgets, and savings goals, with an AI-powered financial analysis feature.
 
-> 🔗 **[Live Demo](https://dirhamy-app.vercel.app
+> **[🔗 Live Demo](https://dirhamy-app.vercel.app)**
 
 ---
 
